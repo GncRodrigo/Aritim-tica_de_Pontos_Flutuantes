@@ -11,6 +11,7 @@ endmodule
 typedef enum logic [2:0] { 
     READ, // vai ler os dados de entrada a e b
     OPERATION, // vai realizar a operação de adição
+    EQUALIZING, // vai igualar os expoentes de A e B
     CHECK, // vai verificar se a operação foi exact, overflow, underflow ou inexact
     WRITE// quando terminar a operação, vai escrever o resultado na saída
 
@@ -25,9 +26,9 @@ logic [0:1] count_read;
 
 
 always_ff @(posedge clock_100kHz, negedge reset) begin
-    if(reset) begin
+    if(!reset) begin
         op_A_in <= 0;
-        count_read <= 0
+        count_read <= 0;
         op_B_in <= 0;
         data_out <= 0;
         status_out <= 0;
@@ -60,10 +61,26 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     end else begin
                         data_out <= op_A_in[7:31] - op_B_in[7:31];
                     end
+
+            end
+            EQUALIZING:begin
+            // Aqui vamos igualar os expoentes de A e B
+                if(deslocamento < 0) begin
+                    status_out[1:6] <= op_B_in[1:6];
+                    status_out[0] <= op_B_in[0];
+                    status_out[7:31] <= status_out[7:31] >> -deslocamento;
+
+                end else begin
+                    status_out[1:6] <= op_A_in[1:6];
+                    status_out[0] <= op_A_in[0];
+                    status_out[7:31] <= status_out[7:31] >> deslocamento;
+                end
+
             end
 
             CHECK:begin
-
+              
+         
             end
 
             WRITE:begin
