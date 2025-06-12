@@ -35,46 +35,52 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
         guarda_A <= 0;
         guarda_B <= 0;
         data_out <= 0;
-        data_out <= 0;
+        status_out <= 0;
+        mantissa_A <= 0;
+        mantissa_B <= 0;
+        expoente_A <= 0;
+        expoente_B <= 0;
+        sinal_A <= 0;
+        sinal_B <= 0;
     end else
     begin
         case(EA)
 
             READ:begin
                     //separando os campos do ponto flutuante do A
-                    signal_A <= op_A_in[0];
+                    sinal_A <= op_A_in[0];
                     expoente_A <= op_A_in[1:6];
                     mantissa_A <= op_A_in[7:31];
 
                     //separando os campos do ponto flutuante do B
-                    signal_B <= op_B_in[0];
+                    sinal_B <= op_B_in[0];
                     expoente_B <= op_B_in[1:6];
                     mantissa_B <= op_B_in[7:31];
 
-                    //defininco o deslocamento
+                    //definindo o deslocamento
                     deslocamento <= op_A_in[1:6] - op_B_in[1:6];
             end
-
-            OPERATION:begin
-                    if(op_A_in[0] == op_B_in[0]) begin
-                        data_out <= op_A_in[7:31] + op_B_in[7:31];
-                    end else begin
-                        data_out <= op_A_in[7:31] - op_B_in[7:31];
-                    end
-
-            end
-            EQUALIZING:begin
+                  EQUALIZING:begin
                 //igualando os expoentes de A e B
                 if(deslocamento > 0) begin
                     //A é maior que B, então vamos deslocar a mantissa de B
-                    mantissa_B <= mantissa_B << deslocamento;
+                    mantissa_B <= mantissa_B << -deslocamento;
                     expoente_B <= expoente_A; // iguala o expoente de B ao de A
                 end else if(deslocamento < 0) begin
                     //B é maior que A, então vamos deslocar a mantissa de A
-                    mantissa_A <= mantissa_A << (-deslocamento);
+                    mantissa_A <= mantissa_A << deslocamento;
                     expoente_A <= expoente_B; // iguala o expoente de A ao de B
 
                 end
+            end
+
+            OPERATION:begin
+                         if (sinal_A == sinal_B) begin
+                        data_out <= mantissa_A + mantissa_B;
+                        end else begin
+                        data_out <= mantissa_A - mantissa_B;
+                        end
+
             end
 
             CHECK:begin
@@ -92,7 +98,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
 end
 
 always_ff @(posedge clock_100kHz, negedge reset) begin
-    if(reset) begin
+    if(!reset) begin
         EA <= READ;
     end else begin
         case(EA)
