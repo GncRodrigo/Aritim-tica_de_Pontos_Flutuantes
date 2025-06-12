@@ -4,9 +4,9 @@ module PontosFlutuantes(
     input logic [0:31] op_A_in,
     input logic [0:31] op_B_in,
     output logic [0:31] data_out,
-    output logic [0:3] status_out, // 0: exact, 1: overflow, 2: underflow, 3: Inexact
+    output logic [0:3] status_out // 0: exact, 1: overflow, 2: underflow, 3: Inexact
 );
-endmodule
+
 
 typedef enum logic [2:0] { 
     READ, // vai ler os dados de entrada a e b
@@ -19,40 +19,40 @@ typedef enum logic [2:0] {
 
 
 state_t EA, EP;
-assing EA_queue = EA;
-logic [0:5] deslocamento;
-logic [0:31] guarda_A, guarda_B;
-logic [0:1] count_read;
+logic signed [0:5] deslocamento;
+//variavel para armazenar a mantissa que sera shiftada
+logic [0:24] guarda_A, guarda_B;
+
+// para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
+logic [0:24] mantissa_A, mantissa_B;
+logic [0:5] expoente_A, expoente_B;
+logic sinal_A, sinal_B;
 
 
 always_ff @(posedge clock_100kHz, negedge reset) begin
     if(!reset) begin
-        op_A_in <= 0;
-        count_read <= 0;
-        op_B_in <= 0;
+        deslocamento <= 0;
+        guarda_A <= 0;
+        guarda_B <= 0;
         data_out <= 0;
-        status_out <= 0;
+        data_out <= 0;
     end else
     begin
         case(EA)
 
             READ:begin
-                deslocamento <= op_A_in[1:6] - op_B_in[1:6]; 
-                count_read <= count_read + 1;
-                if(count_read == 1) begin
-                    if(deslocamento < 0) begin
-                        // Se o deslocamento for negativo, significa que op_B é maior que op_A
-                        guarda_A <= op_A_in[7:31] << -deslocamento;
-                        op_A_in[7:31] <= op_A_in[7:31] << -deslocamento;
-                    end
-                    if(deslocamento > 0) begin
-                        // Se o deslocamento for positivo, significa que op_A é maior que op_B
-                        guarda_B <= op_B_in[7:31] << deslocamento;
-                        op_B_in[7:31] <= op_B_in[7:31] << deslocamento;
-                    end
-                end
+                    //separando os campos do ponto flutuante do A
+                    signal_A <= op_A_in[0];
+                    expoente_A <= op_A_in[1:6];
+                    mantissa_A <= op_A_in[7:31];
 
+                    //separando os campos do ponto flutuante do B
+                    signal_B <= op_B_in[0];
+                    expoente_B <= op_B_in[1:6];
+                    mantissa_B <= op_B_in[7:31];
 
+                    //defininco o deslocamento
+                    deslocamento <= op_A_in[1:6] - op_B_in[1:6];
             end
 
             OPERATION:begin
@@ -64,18 +64,17 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
 
             end
             EQUALIZING:begin
-            // Aqui vamos igualar os expoentes de A e B
-                if(deslocamento < 0) begin
-                    status_out[1:6] <= op_B_in[1:6];
-                    status_out[0] <= op_B_in[0];
-                    status_out[7:31] <= status_out[7:31] >> -deslocamento;
+                //igualando os expoentes de A e B
+                if(deslocamento > 0) begin
+                    //A é maior que B, então vamos deslocar a mantissa de B
+                    mantissa_B <= mantissa_B << deslocamento;
+                    expoente_B <= expoente_A; // iguala o expoente de B ao de A
+                end else if(deslocamento < 0) begin
+                    //B é maior que A, então vamos deslocar a mantissa de A
+                    mantissa_A <= mantissa_A << (-deslocamento);
+                    expoente_A <= expoente_B; // iguala o expoente de A ao de B
 
-                end else begin
-                    status_out[1:6] <= op_A_in[1:6];
-                    status_out[0] <= op_A_in[0];
-                    status_out[7:31] <= status_out[7:31] >> deslocamento;
                 end
-
             end
 
             CHECK:begin
@@ -98,9 +97,8 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
     end else begin
         case(EA)
             READ: begin
-                if(count_read == 1)begin
-                    EA <= OPERATION;
-                end
+              
+                    EA <= EQUALIZING;
             end
             OPERATION: begin
                 EA <= CHECK;
@@ -115,3 +113,5 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
         endcase
     end
 end
+
+endmodule
