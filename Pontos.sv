@@ -8,20 +8,17 @@ module PontosFlutuantes(
 );
 
 
-typedef enum logic [2:0] { 
+typedef enum logic [1:0] { 
     READ, // vai ler os dados de entrada a e b
     OPERATION, // vai realizar a operação de adição
     EQUALIZING, // vai igualar os expoentes de A e B
     CHECK, // vai verificar se a operação foi exact, overflow, underflow ou inexact
-    WRITE// quando terminar a operação, vai escrever o resultado na saída
-
 } state_t;
 
 
 state_t EA, EP;
 logic signed [0:5] deslocamento;
-//variavel para armazenar a mantissa que sera shiftada
-logic [0:24] guarda_A, guarda_B;
+
 
 // para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
 logic [0:24] mantissa_A, mantissa_B;
@@ -61,36 +58,35 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     deslocamento <= op_A_in[1:6] - op_B_in[1:6];
             end
                   EQUALIZING:begin
-                //igualando os expoentes de A e B
-                if(deslocamento > 0) begin
-                    //A é maior que B, então vamos deslocar a mantissa de B
-                    mantissa_B <= mantissa_B << -deslocamento;
-                    expoente_B <= expoente_A; // iguala o expoente de B ao de A
-                end else if(deslocamento < 0) begin
-                    //B é maior que A, então vamos deslocar a mantissa de A
-                    mantissa_A <= mantissa_A << deslocamento;
-                    expoente_A <= expoente_B; // iguala o expoente de A ao de B
-
-                end
+                    if(deslocamento > 0) begin
+                        mantissa_B <= mantissa_B >> deslocamento; // shiftando a mantissa B para a direita
+                    end else if(deslocamento < 0) begin
+                        mantissa_A <= mantissa_A << deslocamento; // shiftando a mantissa A para a direita
+                    end
             end
 
             OPERATION:begin
                          if (sinal_A == sinal_B) begin
-                        data_out <= mantissa_A + mantissa_B;
+                        data_out[7:31]<= mantissa_A + mantissa_B;
                         end else begin
-                        data_out <= mantissa_A - mantissa_B;
+                        data_out[7:31] <= mantissa_A - mantissa_B;
                         end
+                        //depois da operação, alinhar os expoentes e os sinais
+                        if (expoente_A > expoente_B) begin
+                            data_out[1:6] <= expoente_A;
+                            data_out[0] <= sinal_A;
+                        end else begin
+                            data_out[1:6] <= expoente_B;
+                            data_out[0] <= sinal_B;                            
 
+                        end
             end
-
             CHECK:begin
-              
-         
-            end
-
-            WRITE:begin
+                if ((mantissa_A + mantissa_B) > 24'hFFFFFF) status_out <= 1; // overflow
+                if((mantissa_A + mantissa_B) < 24'h000001) status_out <= 2; // underflow
 
             end
+
 
         endcase
     end
@@ -106,15 +102,18 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
               
                     EA <= EQUALIZING;
             end
+            EQUALIZING: begin
+                if (deslocamento != 0) begin
+                    EA <= OPERATION;
+                end else begin
+                    EA <= OPERATION;
+                end
+            end
             OPERATION: begin
                 EA <= CHECK;
             end
-            CHECK: begin
-                EA <= WRITE;
-            end
-            WRITE: begin
-                EA <= READ;
-            end
+            CHECK:
+                EA <= READ; 
 
         endcase
     end
