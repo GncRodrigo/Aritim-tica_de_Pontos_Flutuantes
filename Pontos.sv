@@ -51,14 +51,14 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     end
                     // A sempre será o maior expoente
                     if(start == 1) begin
-                        sinal_A <= compare ? op_A_in[0] : op_B_in[0];   
-                        expoente_A  <= compare ? op_A_in[1:6] : op_B_in[1:6];   
-                        mantissa_A <= compare ? {1'b1,op_A_in[7:31]} : {1'b1,op_B_in[7:31]}; 
+                        sinal_A <= comparar ? op_A_in[0] : op_B_in[0];   
+                        expoente_A  <= comparar ? op_A_in[1:6] : op_B_in[1:6];   
+                        mantissa_A <= comparar ? {1'b1,op_A_in[7:31]} : {1'b1,op_B_in[7:31]}; 
                                 
                         // B sempre será o menor expoente
-                        sinal_B <= compare ? op_B_in[0] : op_A_in[0]; 
-                        expoente_B  <= compare ? op_B_in[1:6] : op_A_in[1:6];   
-                        mantissa_B <= compare ? {1'b1,op_B_in[7:31]} : {1'b1,op_A_in[7:31]};     
+                        sinal_B <= comparar ? op_B_in[0] : op_A_in[0]; 
+                        expoente_B  <= comparar ? op_B_in[1:6] : op_A_in[1:6];   
+                        mantissa_B <= comparar ? {1'b1,op_B_in[7:31]} : {1'b1,op_A_in[7:31]};     
 
                         start <= 2; 
                     end
