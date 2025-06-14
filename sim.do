@@ -5,7 +5,7 @@ vmap work work
 set TOP_ENTITY {work.tb}
 
 vlog -work work Pontos.sv
-vlog -work work Pontos_tb.sv
+vlog -work work tb_Pontos.sv
 
 vsim -voptargs=+acc work.tb_Pontos
 
