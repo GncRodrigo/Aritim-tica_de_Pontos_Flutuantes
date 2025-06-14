@@ -1,5 +1,5 @@
 `timescale 1us/1ps
-module Pontos_tb;
+module tb;
 
     logic clock_100kHz= 0;
     logic reset = 1;
@@ -8,7 +8,7 @@ module Pontos_tb;
 
     logic[31:0] data_out;
     logic[3:0] status_out;
-FPU dut(
+Pontos_tb dut(
      .clock_100kHz(clock_100kHz),
      .reset(reset), 
      .Op_A_in(op_A_in),
