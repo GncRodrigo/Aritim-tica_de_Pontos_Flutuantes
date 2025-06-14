@@ -1,5 +1,5 @@
 `timescale 1us/1ps
-module tb;
+module Pontos_tb;
 
     logic clock_100kHz= 0;
     logic reset = 1;
