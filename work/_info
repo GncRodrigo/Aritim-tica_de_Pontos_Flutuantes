@@ -7,4 +7,29 @@ z2
 !i10e 25
 !i10f 100
 cModel Technology
-dC:/Users/User/OneDrive/Documentos/Aritim-tica_de_Pontos_Flutuantes
+Z0 dC:/Users/User/OneDrive/Documentos/Aritim-tica_de_Pontos_Flutuantes
+vPontosFlutuantes
+DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+!s110 1749922435
+!i10b 1
+!s100 SXCNJ6Xk2bDln:dCl:d901
+IlN?goYO__o0475^LP]h?]1
+VDg1SIo80bB@j0V0VzS_@n1
+!s105 Pontos_sv_unit
+S1
+R0
+w1749922407
+8Pontos.sv
+FPontos.sv
+L0 1
+OV;L;10.5b;63
+r1
+!s85 0
+31
+!s108 1749922435.000000
+!s107 Pontos.sv|
+!s90 -reportprogress|300|-work|work|Pontos.sv|
+!i113 1
+o-work work
+tCvgOpt 0
+n@pontos@flutuantes

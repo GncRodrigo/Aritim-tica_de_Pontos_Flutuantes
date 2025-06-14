@@ -1,7 +1,7 @@
 `timescale 1us/1ps
 module tb;
 
-    logic clock_100Khz= 0;
+    logic clock_100kHz= 0;
     logic reset = 1;
     logic[31:0] op_A_in;
     logic[31:0] op_B_in;
@@ -9,7 +9,7 @@ module tb;
     logic[31:0] data_out;
     logic[3:0] status_out;
 FPU dut(
-     .clock_100Khz(clock_100Khz),
+     .clock_100kHz(clock_100kHz),
      .reset(reset), 
      .Op_A_in(op_A_in),
      .Op_B_in(op_B_in),
@@ -18,7 +18,7 @@ FPU dut(
 );
 
 always begin
-        #5 clock_100KHZ = ~clock_100KHZ;
+        #5 clock_100kHz = ~clock_100kHz;
     end
 
     initial begin
