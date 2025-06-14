@@ -13,7 +13,7 @@ typedef enum logic [1:0] {
     OPERATION, // vai realizar a operação de adição
     EQUALIZING, // vai igualar os expoentes de A e B
     POS_OPERATION, // vai o ajuste da mantissa de data_out caso necessário
-    CHECK, // vai verificar se a operação foi exact, overflow, underflow ou inexact
+    CHECK // vai verificar se a operação foi exact, overflow, underflow ou inexact
 } state_t;
 
 
@@ -46,19 +46,19 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
 
             READ:begin // para facilitar, separar as mantissas, expoentes e sinais de A e B, além disso deixar sempre o maior expoente em A
                     if(start == 0 )begin
-                        comparar =  (Op_A_in[1:6] >= Op_B_in[1:6])? 1'b1 : 1'b0; 
+                        comparar =  (op_A_in[1:6] >= op_B_in[1:6])? 1'b1 : 1'b0; 
                         start <= 1; 
                     end
                     // A sempre será o maior expoente
                     if(start == 1) begin
-                        sinal_A <= compare ? Op_A_in[0] : Op_B_in[0];   
-                        expoente_A  <= compare ? Op_A_in[1:6] : Op_B_in[1:6];   
-                        mantissa_A <= compare ? {1'b1,Op_A_in[7:31]} : {1'b1,Op_B_in[7:31]}; 
+                        sinal_A <= compare ? op_A_in[0] : op_B_in[0];   
+                        expoente_A  <= compare ? op_A_in[1:6] : op_B_in[1:6];   
+                        mantissa_A <= compare ? {1'b1,op_A_in[7:31]} : {1'b1,op_B_in[7:31]}; 
                                 
                         // B sempre será o menor expoente
-                        sinal_B <= compare ? Op_B_in[0] : Op_A_in[0]; 
-                        expoente_B  <= compare ? Op_B_in[1:6] : Op_A_in[1:6];   
-                        mantissa_B <= compare ? {1'b1,Op_B_in[7:31]} : {1'b1,Op_A_in[7:31]};     
+                        sinal_B <= compare ? op_B_in[0] : op_A_in[0]; 
+                        expoente_B  <= compare ? op_B_in[1:6] : op_A_in[1:6];   
+                        mantissa_B <= compare ? {1'b1,op_B_in[7:31]} : {1'b1,op_A_in[7:31]};     
 
                         start <= 2; 
                     end
