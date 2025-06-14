@@ -25,7 +25,7 @@ logic signed [0:5] deslocamento;
 logic [0:24] mantissa_A, mantissa_B;
 logic [0:5] expoente_A, expoente_B;
 logic sinal_A, sinal_B;
-logic compare;
+logic comparar;
 logic start;
 
 
