@@ -8,7 +8,7 @@ module tb;
 
     logic[31:0] data_out;
     logic[3:0] status_out;
-tb_Pontos dut(
+tbPontos dut(
      .clock_100kHz(clock_100kHz),
      .reset(reset), 
      .Op_A_in(op_A_in),
