@@ -8,7 +8,7 @@ module PontosFlutuantes(
 );
 
 
-typedef enum logic [1:0] { 
+typedef enum logic [2:0] { 
     READ, // vai ler os dados de entrada a e b
     OPERATION, // vai realizar a operação de adição
     EQUALIZING, // vai igualar os expoentes de A e B
