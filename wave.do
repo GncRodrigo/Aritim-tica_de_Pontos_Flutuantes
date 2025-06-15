@@ -14,5 +14,3 @@ add wave -noupdate -label status_out   /PontosFlutuantes/status_out
 # Estado atual
 add wave -noupdate -label EA           /PontosFlutuantes/EA
 
-# Atualizar e mostrar
-WaveUpdate
