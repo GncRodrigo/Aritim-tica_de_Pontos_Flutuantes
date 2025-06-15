@@ -1,4 +1,4 @@
-`timescale 1us/1ps
+`timescale 1us/1ns
 module tb;
 
     logic clock_100kHz = 0;
