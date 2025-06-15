@@ -2,13 +2,13 @@ onerror {resume}
 quietly WaveActivateNextPane {} 0
     
     
-add wave -label reset /tb/PontosFlutuantes/reset
-add wave -label clock_100kHz /tb/PontosFlutuantes/clock_100kHz
-add wave -label op_A_in /tb/PontosFlutuantes/op_A_in
-add wave -label op_B_in /tb/PontosFlutuantes/op_B_in
-add wave -label data_out /tb/PontosFlutuantes/data_out
-add wave -label status_out /tb/PontosFlutuantes/status_out
-add wave -label EA /tb/PontosFlutuantes/EA
+add wave -label reset       /tb/dut/reset
+add wave -label op_A_in     /tb/dut/op_A_in
+add wave -label op_B_in     /tb/dut/op_B_in
+add wave -label data_out    /tb/dut/data_out
+add wave -label status_out  /tb/dut/status_out
+add wave -label EA          /tb/dut/EA
+
 
 
 TreeUpdate [SetDefaultTree]
