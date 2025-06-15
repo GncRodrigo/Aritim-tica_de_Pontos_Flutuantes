@@ -1,10 +1,8 @@
-catch {vdel -all -lib work}
+if {[file isdirectory work]} {vdel -all -lib work}
 vlib work
 vmap work work
 
-set TOP_ENTITY {work.tb}
-
-vlog -work work Pontos.sv
+vlog -work work PontosFlutuantes.sv
 vlog -work work tb_Pontos.sv
 
 vsim -voptargs=+acc work.tb
@@ -12,5 +10,5 @@ vsim -voptargs=+acc work.tb
 quietly set StdArithNoWarnings 1
 quietly set StdVitalGlitchNoWarnings 1
 
-
-run 20ms
+do wave.do
+run 25ms
