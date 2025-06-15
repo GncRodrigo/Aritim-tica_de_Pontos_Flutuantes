@@ -22,6 +22,7 @@ module tb;
     always #5 clock_100kHz = ~clock_100kHz;
 
     initial begin
+        $display("Iniciando simulação");
         // Reset curto no início
         #5 reset = 0;
         #5 reset = 1;
