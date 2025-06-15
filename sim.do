@@ -7,7 +7,7 @@ set TOP_ENTITY {work.tb}
 vlog -work work Pontos.sv
 vlog -work work tb_Pontos.sv
 
-vsim -voptargs=+acc work.PontosFlutuantes
+vsim -voptargs=+acc work.tb
 
 quietly set StdArithNoWarnings 1
 quietly set StdVitalGlitchNoWarnings 1
