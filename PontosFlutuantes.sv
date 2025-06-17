@@ -98,12 +98,11 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 end else if (mantissa_out[1] == 0 && mantissa_out[2:25] != 0) begin
                     mantissa_out <= mantissa_out << 1;
                     expoente_A <= expoente_A - 1;
-                end else begin
-                    // Considera mantissa normalizada ou zero
-                    data_out[0] <= sinal_A;
-                    data_out[1:6] <= expoente_A;
-                    data_out[7:31] <= mantissa_out[1:25]; // descarta bit oculto
-                end
+                end 
+                
+                data_out[0] <= sinal_A;
+                data_out[1:6] <= expoente_A;
+                data_out[7:31] <= mantissa_out[1:25];
             end
 
 
