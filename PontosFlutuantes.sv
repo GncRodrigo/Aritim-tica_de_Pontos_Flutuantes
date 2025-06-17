@@ -110,11 +110,11 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
 
             CHECK: begin
-                if (data_out[1:6] >= 6'd63) begin
+                if (expoente_A >= 6'd63) begin
                     status_out <= 4'd1; // overflow
-                end else if (data_out[1:6] <= 6'd0) begin
+                end else if (expoente_A <= 6'd0) begin
                     status_out <= 4'd2; // underflow
-                end else if (data_out[8:31] == 24'd0) begin
+                end else if (mantissa_out[2:25] == 24'd0) begin
                     status_out <= 4'd3; // inexact (mantissa essencialmente zero)
                 end else begin
                     status_out <= 4'd0; // exact
