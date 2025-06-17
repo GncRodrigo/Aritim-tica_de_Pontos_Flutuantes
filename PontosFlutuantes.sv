@@ -92,22 +92,21 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                         
             end
             POS_OPERATION: begin
-                // Só atualizamos sinal e expoente uma vez no início
                 if (mantissa_out[0] == 1) begin
-                    // Houve carry na posição mais à esquerda
                     mantissa_out <= mantissa_out >> 1;
-                    expoente_A <= expoente_A + 1; // atualiza o expoente original
+                    expoente_A <= expoente_A + 1;
                 end else if (mantissa_out[1] == 0 && mantissa_out[2:25] != 0) begin
-                    // Ainda precisa normalizar para esquerda (subnormal)
                     mantissa_out <= mantissa_out << 1;
                     expoente_A <= expoente_A - 1;
                 end else begin
-                    // Quando estiver normalizada, atualiza data_out
-                    data_out[0] <= sinal_A;         // Sinal
-                    data_out[1:6] <= expoente_A;    // Expoente normalizado
-                    data_out[7:31] <= mantissa_out[1:25]; // Mantissa sem o bit oculto
+                    // Considera mantissa normalizada ou zero
+                    data_out[0] <= sinal_A;
+                    data_out[1:6] <= expoente_A;
+                    data_out[7:31] <= mantissa_out[1:25]; // descarta bit oculto
+                    EA <= CHECK;
                 end
             end
+
 
             CHECK: begin
                 if (expoente_A >= 6'd63) begin
