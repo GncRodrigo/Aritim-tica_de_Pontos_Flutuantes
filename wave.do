@@ -1,14 +1,13 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /PontosFlutuantes/clock_100kHz
-add wave -noupdate /PontosFlutuantes/reset
-add wave -noupdate /PontosFlutuantes/op_A_in
-add wave -noupdate /PontosFlutuantes/op_B_in
-add wave -noupdate /PontosFlutuantes/data_out
-add wave -noupdate /PontosFlutuantes/status_out
-add wave -noupdate /PontosFlutuantes/EA
+add wave -noupdate /tb/clock_100kHz
+add wave -noupdate /tb/reset
+add wave -noupdate /tb/op_A_in
+add wave -noupdate /tb/op_B_in
+add wave -noupdate /tb/data_out
+add wave -noupdate /tb/status_out
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ps} 0}
+WaveRestoreCursors {{Cursor 1} {0 ns} 0}
 quietly wave cursor active 0
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -24,4 +23,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {19999999050 ps} {20000000050 ps}
+WaveRestoreZoom {194999 ns} {195001 ns}
