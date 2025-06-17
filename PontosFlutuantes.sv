@@ -148,7 +148,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 EA <= POS_OPERATION;
             end
             POS_OPERATION: begin
-                if(data_out[7] != 0 || data_out[7:31] == 0) begin
+                if(mantissa_out[0] == 0 && mantissa_out[1] == 1) begin
                     EA <= CHECK;
                 end else begin
                     EA <= POS_OPERATION; // continua ajustando a mantissa
