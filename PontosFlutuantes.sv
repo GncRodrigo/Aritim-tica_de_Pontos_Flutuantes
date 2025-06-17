@@ -18,7 +18,7 @@ typedef enum logic [2:0] {
 
 
 state_t EA;
-logic signed [0:5] deslocamento;
+logic  [0:5] deslocamento;
 
 
 // para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
@@ -41,6 +41,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
         expoente_B <= 0;
         sinal_A <= 0;
         sinal_B <= 0;
+        start <= 0;
     end else
     begin
         case(EA)
@@ -76,10 +77,6 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
 
             OPERATION:begin
-                // antes de fazer a operação iremos completar o expoente e o sinal de data_out
-                data_out[0] <= sinal_A; // sinal de A
-                data_out[1:6] <= expoente_A; // expoente de A
-
 
                 // agora iremos fazer a operação de adição ou subtração das mantissas
                 if(sinal_A == sinal_B) begin
@@ -95,6 +92,10 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                         
             end
             POS_OPERATION: begin
+                 // antes de fazer a operação iremos completar o expoente e o sinal de data_out
+                data_out[0] <= sinal_A; // sinal de A
+                data_out[1:6] <= expoente_A; // expoente de A
+
                             if (mantissa_out[0] == 1) begin // houve carry, precisa normalizar
                     mantissa_out <= mantissa_out >> 1;
                     data_out[1:6] <= data_out[1:6] + 1;
