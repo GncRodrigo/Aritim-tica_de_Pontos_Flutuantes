@@ -23,6 +23,7 @@ logic signed [0:5] deslocamento;
 
 // para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
 logic [0:24] mantissa_A, mantissa_B;
+logic [0:25] mantissa_out;
 logic [0:5] expoente_A, expoente_B;
 logic sinal_A, sinal_B;
 logic comparar;
@@ -82,20 +83,25 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 if(sinal_A == sinal_B) begin
                     
                   
-                    data_out[7:31] <= mantissa_A + mantissa_B; // se os sinais forem iguais, soma as mantissas
+                    mantissa_out <= mantissa_A + mantissa_B; // se os sinais forem iguais, soma as mantissas
                     
             end else begin
                   
-                    data_out[7:31] <= mantissa_A - mantissa_B; // se os sinais forem diferentes, subtrai as mantissas
+                    mantissa_out <= mantissa_A - mantissa_B; // se os sinais forem diferentes, subtrai as mantissas
                     
             end
                         
             end
             POS_OPERATION: begin
-                if (data_out[7] == 0 && data_out[7:31] != 0) begin
-                    data_out[7:31] <= data_out[7:31] << 1;
+                            if (mantissa_out[0] == 1) begin // houve carry, precisa normalizar
+                    mantissa_out <= mantissa_out >> 1;
+                    data_out[1:6] <= data_out[1:6] + 1;
+                end else if (mantissa_out[1] == 0 && mantissa_out[2:25] != 0) begin
+                    mantissa_out <= mantissa_out << 1;
                     data_out[1:6] <= data_out[1:6] - 1;
-                end 
+                end else begin
+                    data_out[7:31] <= mantissa_out[1:25]; // descarta bit oculto
+                end
             end
 
             CHECK: begin
