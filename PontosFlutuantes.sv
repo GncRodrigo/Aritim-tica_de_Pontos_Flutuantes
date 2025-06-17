@@ -103,7 +103,6 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     data_out[0] <= sinal_A;
                     data_out[1:6] <= expoente_A;
                     data_out[7:31] <= mantissa_out[1:25]; // descarta bit oculto
-                    EA <= CHECK;
                 end
             end
 
