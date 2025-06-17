@@ -27,7 +27,7 @@ logic [0:25] mantissa_out;
 logic [0:5] expoente_A, expoente_B;
 logic sinal_A, sinal_B;
 logic comparar;
-logic start;
+logic [1:0] start;
 
 
 always_ff @(posedge clock_100kHz, negedge reset) begin
@@ -47,7 +47,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
 
             READ:begin // para facilitar, separar as mantissas, expoentes e sinais de A e B, além disso deixar sempre o maior expoente em A
                     if(start == 0 )begin
-                        comparar =  (op_A_in[1:6] >= op_B_in[1:6])? 1'b1 : 1'b0; 
+                        comparar <=  (op_A_in[1:6] >= op_B_in[1:6])? 1'b1 : 1'b0; 
                         start <= 1; 
                     end
                     // A sempre será o maior expoente
@@ -65,12 +65,14 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     end
                     if(start == 2) begin
                         deslocamento <= expoente_A - expoente_B;        
-                        start <= 0; // reset start para a próxima leitura       
+                        start <= 3; // reset start para a próxima leitura       
                     end
             end
 
                   EQUALIZING:begin
                   mantissa_B <= mantissa_B >> deslocamento; // desloca a mantissa de B para alinhar com A
+                  start <= 0; // reset start para a próxima leitura
+                
             end
 
             OPERATION:begin
@@ -128,7 +130,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
     end else begin
         case(EA)
             READ: begin
-                if (start == 2) begin
+                if (start == 3) begin
                     EA <= EQUALIZING;
                 end
             end
