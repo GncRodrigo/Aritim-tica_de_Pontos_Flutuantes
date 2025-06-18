@@ -3,7 +3,6 @@ module tb;
 
     logic clock_100kHz = 0;
     logic reset = 1;
-    logic EA;
     logic [31:0] op_A_in;
     logic [31:0] op_B_in;
 
@@ -11,7 +10,6 @@ module tb;
     logic [3:0]  status_out;
 
     PontosFlutuantes dut (
-        .EA(EA),
         .clock_100kHz(clock_100kHz),
         .reset(reset), 
         .op_A_in(op_A_in),
