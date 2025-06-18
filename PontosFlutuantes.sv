@@ -71,7 +71,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                         start <= 2; 
                     end
                     if(start == 2) begin
-                        deslocamento <= expoente_A - expoente_B;        
+                        deslocamento <= op_A_in[30:25] - op_B_in[30:25]; // calcula o deslocamento necessário para alinhar as mantissas        
                         start <= 3; // reset start para a próxima leitura       
                     end
             end
