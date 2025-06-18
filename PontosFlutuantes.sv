@@ -29,6 +29,7 @@ logic [5:0] expoente_A, expoente_B;
 logic sinal_A, sinal_B;
 logic comparar;
 logic [1:0] start;
+logic helper;
 
 
 always_ff @(posedge clock_100kHz, negedge reset) begin
@@ -107,6 +108,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 data_out[31] <= sinal_A;
                 data_out[30:25] <= expoente_A;
                 data_out[24:0] <= mantissa_out[24:0]; 
+                helper <= 1; 
             end
 
 
@@ -146,7 +148,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 EA <= POS_OPERATION;
             end
             POS_OPERATION: begin
-                if(mantissa_out[25] == 0 && mantissa_out[24] == 1) begin
+                if(helper == 1) begin
                     EA <= CHECK;
                 end else begin
                     EA <= POS_OPERATION; // continua ajustando a mantissa
