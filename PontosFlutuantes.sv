@@ -77,7 +77,6 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 mantissa_B <= mantissa_B_c; // pega a mantissa de B
 
                 deslocamento <= expoente_A_c - expoente_B_c; // calcula o deslocamento necessário para alinhar as mantissas
-                start <= 0; // reseta o contador de start para a próxima leitura
                 end
 
 
