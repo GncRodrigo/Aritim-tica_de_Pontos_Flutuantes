@@ -54,28 +54,25 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     if(start == 0 )begin
                         helper <= 0; // reset helper
                         qual_lugar <= 0;
-                    if (op_A_in[30:25] > op_B_in[30:25])
-                        comparar = 1;
-                    else if (op_A_in[30:25] < op_B_in[30:25])
-                        comparar = 0;
-                    else // expoentes iguais – escolha com base na mantissa ou outra política
-                        comparar = (op_A_in[24:0] >= op_B_in[24:0]) ? 1'b1 : 1'b0;
+                        comparar <=  (op_A_in[30:25] >= op_B_in[30:25])? 1'b1 : 1'b0; 
                         start <= 1; 
                     end
                     // A sempre será o maior expoente
                     if(start == 1) begin
                         sinal_A <= comparar ? op_A_in[31] : op_B_in[31];   
-                        expoente_A  <= comparar ? op_A_in[30:25] : op_B_in[30:25];   
+                      
                         mantissa_A <= comparar ? {1'b1,op_A_in[24:0]} : {1'b1,op_B_in[24:0]}; 
                                 
                         // B sempre será o menor expoente
                         sinal_B <= comparar ? op_B_in[31] : op_A_in[31]; 
-                        expoente_B  <= comparar ? op_B_in[30:25] : op_A_in[30:25];   
+                      
                         mantissa_B <= comparar ? {1'b1,op_B_in[24:0]} : {1'b1,op_A_in[24:0]};     
 
                         start <= 2; 
                     end
                     if(start == 2) begin
+                        expoente_B  <= comparar ? op_B_in[30:25] : op_A_in[30:25];  
+                         expoente_A  <= comparar ? op_A_in[30:25] : op_B_in[30:25];  
                         deslocamento <= op_A_in[30:25] - op_B_in[30:25]; // calcula o deslocamento necessário para alinhar as mantissas        
                         start <= 3; // reset start para a próxima leitura       
                     end
