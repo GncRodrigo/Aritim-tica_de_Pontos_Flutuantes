@@ -24,8 +24,8 @@ logic  [5:0] deslocamento;
 
 
 // para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
-logic [24:0] mantissa_A, mantissa_B;
-logic [26:0] mantissa_out;
+logic [25:0] mantissa_A, mantissa_B;
+logic [25:0] mantissa_out;
 logic [5:0] expoente_A, expoente_B;
 logic sinal_A, sinal_B;
 logic comparar;
@@ -121,7 +121,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 qual_lugar <= 5;
                 data_out[31]    <= sinal_A;
                 data_out[30:25] <= expoente_A;
-                data_out[24:2]  <= mantissa_out[25:1]; // pega os bits da mantissa já ajustados
+                data_out[24:0]  <= mantissa_out[25:1]; // pega os bits da mantissa já ajustados
               
             end
 
