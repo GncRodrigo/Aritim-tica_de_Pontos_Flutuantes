@@ -96,9 +96,8 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
                         
             end
-            POS_OPERATION: begin
-                qual_lugar <= 3;
-
+            POS_OPERATION: begin   
+                qual_lugar <= 3; // indica que estamos no processo de ajuste da mantissa
                 if (mantissa_out[25] == 1) begin
                     mantissa_out <= mantissa_out >> 1;
                     expoente_A <= expoente_A + 1;
@@ -106,12 +105,10 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     mantissa_out <= mantissa_out << 1;
                     expoente_A <= expoente_A - 1;
                 end else begin
-                    if (!helper) begin
-                        helper <= 1;
-                        data_out[31] <= sinal_A;
-                        data_out[30:25] <= expoente_A;
-                        data_out[24:0] <= mantissa_out[24:0];
-                    end
+                data_out[31] <= sinal_A;
+                data_out[30:25] <= expoente_A;
+                data_out[24:0] <= mantissa_out[24:0]; 
+                helper <= 1; 
                 end
             end
 
