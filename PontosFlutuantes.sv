@@ -121,7 +121,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 qual_lugar <= 5;
                 data_out[31]    <= sinal_A;
                 data_out[30:25] <= expoente_A;
-                data_out[24:0]  <= mantissa_out[24:0]; // ou [25:1] se quiser retirar o bit oculto
+              
             end
 
             CHECK: begin
