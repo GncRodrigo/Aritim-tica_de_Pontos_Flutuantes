@@ -54,7 +54,12 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     if(start == 0 )begin
                         helper <= 0; // reset helper
                         qual_lugar <= 0;
-                        comparar <=  (op_A_in[30:25] >= op_B_in[30:25])? 1'b1 : 1'b0; 
+                    if (op_A_in[30:25] > op_B_in[30:25])
+                        comparar = 1;
+                    else if (op_A_in[30:25] < op_B_in[30:25])
+                        comparar = 0;
+                    else // expoentes iguais – escolha com base na mantissa ou outra política
+                        comparar = (op_A_in[24:0] >= op_B_in[24:0]) ? 1'b1 : 1'b0;
                         start <= 1; 
                     end
                     // A sempre será o maior expoente
