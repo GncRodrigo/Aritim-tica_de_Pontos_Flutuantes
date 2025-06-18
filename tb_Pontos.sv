@@ -8,8 +8,10 @@ module tb;
 
     logic [31:0] data_out;
     logic [3:0]  status_out;
+    logic [2:0] qual_lugar;
 
     PontosFlutuantes dut (
+        qual_lugar(qual_lugar),
         .clock_100kHz(clock_100kHz),
         .reset(reset), 
         .op_A_in(op_A_in),
