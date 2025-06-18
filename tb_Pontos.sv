@@ -11,7 +11,7 @@ module tb;
     logic [2:0] qual_lugar;
 
     PontosFlutuantes dut (
-        qual_lugar(qual_lugar),
+        .qual_lugar(qual_lugar),
         .clock_100kHz(clock_100kHz),
         .reset(reset), 
         .op_A_in(op_A_in),
