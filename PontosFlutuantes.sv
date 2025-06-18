@@ -66,6 +66,8 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
 
             READ:begin // para facilitar, separar as mantissas, expoentes e sinais de A e B, além disso deixar sempre o maior expoente em A
                 qual_lugar <= 0; // indica que estamos no processo de leitura
+                start <= start + 1; // incrementa o contador de start para indicar que estamos lendo os dados
+                if(start == 1) begin
                 sinal_A <= sinal_A_c; // pega o sinal de A
                 expoente_A <= expoente_A_c; // pega o expoente de A
                 mantissa_A <= mantissa_A_c; // pega a mantissa de A
@@ -75,6 +77,8 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 mantissa_B <= mantissa_B_c; // pega a mantissa de B
 
                 deslocamento <= expoente_A_c - expoente_B_c; // calcula o deslocamento necessário para alinhar as mantissas
+                start <= 0; // reseta o contador de start para a próxima leitura
+                end
 
 
             end
