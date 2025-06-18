@@ -8,7 +8,6 @@ module tb;
     logic [31:0] op_B_in;
     logic [31:0] data_out;
     logic [3:0]  status_out;
-    logic [2:0]  qual_lugar;
     
     // Instância do DUT
     PontosFlutuantes dut (
@@ -17,8 +16,7 @@ module tb;
         .op_A_in(op_A_in),
         .op_B_in(op_B_in),
         .data_out(data_out),
-        .status_out(status_out),
-        .qual_lugar(qual_lugar)
+        .status_out(status_out)
     );
     
     // Geração de clock: 100 kHz, período de 10 us (5 us high, 5 us low)
