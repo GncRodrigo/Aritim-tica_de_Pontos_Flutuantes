@@ -107,7 +107,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 
                 data_out[31] <= sinal_A;
                 data_out[30:25] <= expoente_A;
-                data_out[24:0] <= mantissa_out[25:1]; 
+                data_out[24:0] <= mantissa_out[24:0]; 
                 helper <= 1; 
                 end
             end
