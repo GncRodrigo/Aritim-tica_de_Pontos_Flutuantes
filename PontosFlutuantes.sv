@@ -24,13 +24,27 @@ logic  [5:0] deslocamento;
 
 
 // para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
-logic [25:0] mantissa_A, mantissa_B;
+logic [25:0] mantissa_A, mantissa_B mantissa_A_c, mantissa_B_c;
 logic [26:0] mantissa_out;
-logic [5:0] expoente_A, expoente_B;
-logic sinal_A, sinal_B;
-logic comparar;
+logic [5:0] expoente_A, expoente_B, expoente_A_c, expoente_B_c;
+logic sinal_A, sinal_B, sinal_A_c, sinal_B_c;
+logic comp_reg; // variável para armazenar o resultado do comparador
 logic [1:0] start;
 logic helper;
+    always_comb begin
+        // Calcular o comparador combinatoriamente
+        comp_reg = (op_A_in[30:25] >= op_B_in[30:25]);
+
+        // Escolher os sinais de acordo com o comparador
+        sinal_A_c = comp_reg ? op_A_in[31] : op_B_in[31];
+        sinal_B_c = comp_reg ? op_B_in[31] : op_A_in[31];
+
+        expoente_A_c = comp_reg ? op_A_in[30:25] : op_B_in[30:25];
+        expoente_B_c = comp_reg ? op_B_in[30:25] : op_A_in[30:25];
+
+        mantissa_A_c = comp_reg ? {1'b1, op_A_in[24:0]} : {1'b1, op_B_in[24:0]};
+        mantissa_B_c = comp_reg ? {1'b1, op_B_in[24:0]} : {1'b1, op_A_in[24:0]};
+    end
 
 
 always_ff @(posedge clock_100kHz, negedge reset) begin
@@ -51,31 +65,18 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
         case(EA)
 
             READ:begin // para facilitar, separar as mantissas, expoentes e sinais de A e B, além disso deixar sempre o maior expoente em A
-                    if(start == 0 )begin
-                        helper <= 0; // reset helper
-                        qual_lugar <= 0;
-                        comparar <=  (op_A_in[30:25] >= op_B_in[30:25])? 1'b1 : 1'b0; 
-                        start <= 1; 
-                    end
-                    // A sempre será o maior expoente
-                    if(start == 1) begin
-                        sinal_A <= comparar ? op_A_in[31] : op_B_in[31];   
-                      
-                        mantissa_A <= comparar ? {1'b1,op_A_in[24:0]} : {1'b1,op_B_in[24:0]}; 
-                                
-                        // B sempre será o menor expoente
-                        sinal_B <= comparar ? op_B_in[31] : op_A_in[31]; 
-                      
-                        mantissa_B <= comparar ? {1'b1,op_B_in[24:0]} : {1'b1,op_A_in[24:0]};     
+                qual_lugar <= 0; // indica que estamos no processo de leitura
+                sinal_A <= sinal_A_c; // pega o sinal de A
+                expoente_A <= expoente_A_c; // pega o expoente de A
+                mantissa_A <= mantissa_A_c; // pega a mantissa de A
 
-                        start <= 2; 
-                    end
-                    if(start == 2) begin
-                        expoente_B  <= comparar ? op_B_in[30:25] : op_A_in[30:25];  
-                         expoente_A  <= comparar ? op_A_in[30:25] : op_B_in[30:25];  
-                        deslocamento <= op_A_in[30:25] - op_B_in[30:25]; // calcula o deslocamento necessário para alinhar as mantissas        
-                        start <= 3; // reset start para a próxima leitura       
-                    end
+                sinal_B <= sinal_B_c; // pega o sinal de B
+                expoente_B <= expoente_B_c; // pega o expoente de B
+                mantissa_B <= mantissa_B_c; // pega a mantissa de B
+
+                deslocamento <= expoente_A_c - expoente_B_c; // calcula o deslocamento necessário para alinhar as mantissas
+
+
             end
 
                   EQUALIZING:begin
@@ -152,9 +153,9 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
     end else begin
         case(EA)
             READ: begin
-                if (start == 3) begin
+                
                     EA <= EQUALIZING;
-                end
+            
             end
             EQUALIZING: begin
                 EA <= OPERATION;
