@@ -1,10 +1,9 @@
 module PontosFlutuantes(
     input logic clock_100kHz, 
     input logic reset,
-    input logic [31:0] op_A_in,
-    input logic [31:0] op_B_in,
-    output logic [2:0] qual_lugar,
-    output logic [31:0] data_out,
+    input logic [31:0] op_A_in, // entrada A do ponto flutuante
+    input logic [31:0] op_B_in, // entrada B do ponto flutuante
+    output logic [31:0] data_out, // saída do ponto flutuante
     output logic [3:0] status_out // 0: exact, 1: overflow, 2: underflow, 3: Inexact
 );
 
@@ -24,13 +23,13 @@ logic  [5:0] deslocamento;
 
 
 // para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
-logic [25:0] mantissa_A, mantissa_B, mantissa_A_c, mantissa_B_c;
-logic [26:0] mantissa_out;
-logic [5:0] expoente_A, expoente_B, expoente_A_c, expoente_B_c;
-logic sinal_A, sinal_B, sinal_A_c, sinal_B_c;
+logic [25:0] mantissa_A, mantissa_B, mantissa_A_c, mantissa_B_c; // mantissas auxiliares para A e B
+logic [26:0] mantissa_out; // mantissa auxiliar para a saida
+logic [5:0] expoente_A, expoente_B, expoente_A_c, expoente_B_c; // expoentes auxiliares para A e B
+logic sinal_A, sinal_B, sinal_A_c, sinal_B_c; // sinais auxiliares para A e B
 logic comp_reg; // variável para armazenar o resultado do comparador
-logic [1:0] start;
-logic helper;
+logic [1:0] start; //para ajudar o controle de READ
+logic helper; // ajuda no controle do estado POS_OPERATION
     always_comb begin
         // Calcular o comparador combinatoriamente
         comp_reg = (op_A_in[30:25] >= op_B_in[30:25]);
@@ -48,7 +47,7 @@ logic helper;
 
 
 always_ff @(posedge clock_100kHz, negedge reset) begin
-    if(!reset) begin
+    if(!reset) begin// resetar os valores internos e outputs
         deslocamento <= 0;
         data_out <= 0;
         status_out <= 0;
@@ -65,8 +64,9 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
         case(EA)
 
             READ:begin // para facilitar, separar as mantissas, expoentes e sinais de A e B, além disso deixar sempre o maior expoente em A
-                qual_lugar <= 0; // indica que estamos no processo de leitura
+
                 start <= start + 1; // incrementa o contador de start para indicar que estamos lendo os dados
+
                 if(start == 1) begin
                 sinal_A <= sinal_A_c; // pega o sinal de A
                 expoente_A <= expoente_A_c; // pega o expoente de A
@@ -83,18 +83,15 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
 
                   EQUALIZING:begin
-                    qual_lugar <= 1; // indica que estamos no processo de equalização
                   mantissa_B <= mantissa_B >> deslocamento; // desloca a mantissa de B para alinhar com A
                   start <= 0; // reset start para a próxima leitura
                 
             end
 
             OPERATION:begin
-                qual_lugar <= 2; // indica que estamos na operação de adição ou subtração
                 // agora iremos fazer a operação de adição ou subtração das mantissas
                 if(sinal_A == sinal_B) begin
                     
-                  
                     mantissa_out <= mantissa_A + mantissa_B; // se os sinais forem iguais, soma as mantissas
                     
             end else begin
@@ -105,26 +102,32 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                         
             end
             POS_OPERATION: begin
-                qual_lugar <= 3;
 
-                if (mantissa_out == 0) begin
+                if (mantissa_out == 0) begin // se a mantissa for zero, não há necessidade de ajuste
+
                     helper <= 1;
-                end else if (mantissa_out[26]) begin
+
+                end else if (mantissa_out[26]) begin // se o bit mais significativo da mantissa for 1, a mantissa será normalizada
+
                     mantissa_out <= mantissa_out >> 1;
                     expoente_A <= expoente_A + 1;
                     helper <= 0;
-                end else if (!mantissa_out[25]) begin
+
+                end else if (!mantissa_out[25]) begin // se o segundo bit mais significativo for 0, a mantissa precisa ser ajustada
+
                     mantissa_out <= mantissa_out << 1;
                     expoente_A <= expoente_A - 1;
                     helper <= 0;
+
                 end else begin
+                    // se a mantissa já estiver estabilizada, não há necessidade de ajuste
                     helper <= 1;
+
                 end
             end
 
-            // Novo estado para montar data_out com os valores finais já estabilizados
             FINALIZE: begin
-                qual_lugar <= 5;
+                // montar o data_out com os valores finais já estabilizados
                 data_out[31]    <= sinal_A;
                 data_out[30:25] <= expoente_A;
                 data_out[24:0]  <= mantissa_out[25:1]; // pega os bits da mantissa já ajustados
@@ -132,7 +135,6 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
 
             CHECK: begin
-                qual_lugar <= 4; // indica que estamos no processo de verificação do status
                 if (expoente_A >= 6'd63) begin
                     status_out <= 4'd1; // overflow
                 end else if (expoente_A <= 6'd0) begin
@@ -143,45 +145,42 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                     status_out <= 4'd0; // exact
                 end
             end
-
-
         endcase
     end
 
 end
 
-always_ff @(posedge clock_100kHz, negedge reset) begin
-    if(!reset) begin
+always_ff @(posedge clock_100kHz, negedge reset) begin // controle do estado EA
+    if(!reset) begin// se resetar começar por READ
         EA <= READ;
     end else begin
         case(EA)
-            READ: begin
+            READ: begin// quando ser o 3 clock(start == 2) vai para o estado de equalização
                     if(start == 2)begin
                     EA <= EQUALIZING;
                     end
             
             end
-            EQUALIZING: begin
+            EQUALIZING: begin // faz apenas o deslocamento da mantissa de B para igualar os expoentes
                 EA <= OPERATION;
             end
-            OPERATION: begin
+            OPERATION: begin // operação de adição ou subtração das mantissas
                 EA <= POS_OPERATION;
             end
-            POS_OPERATION: begin
+            POS_OPERATION: begin// ajuste da mantissa de data_out caso necessário e enquanto nõo estabilizar ficar nesse estado
                 if(helper == 1) begin
                     EA <= FINALIZE; // se a mantissa já estiver estabilizada, vai para o estado de finalização
                 end else begin
                     EA <= POS_OPERATION; // continua ajustando a mantissa
                 end
             end
-            FINALIZE: begin
+            FINALIZE: begin// monta o data_out
                 EA <= CHECK; // vai para o estado de verificação do status
             end
 
-            CHECK:begin
+            CHECK:begin// vau checar qual foi o status da operação
                 EA <= READ; 
             end
-
         endcase
     end
 end

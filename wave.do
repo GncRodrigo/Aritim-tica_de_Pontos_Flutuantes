@@ -6,11 +6,9 @@ add wave -noupdate /tb/op_A_in
 add wave -noupdate /tb/op_B_in
 add wave -noupdate /tb/data_out
 add wave -noupdate /tb/status_out
-add wave -noupdate /tb/qual_lugar
 add wave -noupdate -label mantissa_B /tb/dut/mantissa_B
 add wave -noupdate -label mantissa_A /tb/dut/mantissa_A
 add wave -noupdate -label mantissa_out /tb/dut/mantissa_out
-add wave -noupdate -label expoente_A /tb/dut/expoente_A
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {0 ns} 0}
 quietly wave cursor active 0
