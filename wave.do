@@ -6,6 +6,7 @@ add wave -noupdate /tb/op_A_in
 add wave -noupdate /tb/op_B_in
 add wave -noupdate /tb/data_out
 add wave -noupdate /tb/status_out
+add wave -noupdate /tb/EA
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {0 ns} 0}
 quietly wave cursor active 0

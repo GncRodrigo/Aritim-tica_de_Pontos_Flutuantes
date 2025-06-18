@@ -135,11 +135,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 end
             end
             EQUALIZING: begin
-                if (deslocamento != 0) begin
-                    EA <= OPERATION;
-                end else begin
-                    EA <= OPERATION;
-                end
+                EA <= OPERATION;
             end
             OPERATION: begin
                 EA <= POS_OPERATION;
