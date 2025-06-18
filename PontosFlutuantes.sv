@@ -95,20 +95,31 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
                         
             end
-            POS_OPERATION: begin   
-                qual_lugar <= 3; // indica que estamos no processo de ajuste da mantissa
-                if (mantissa_out[25] == 1) begin
+            POS_OPERATION: begin
+                qual_lugar <= 3;
+
+                // Verificação se a mantissa é zero (resultado zero)
+                if (mantissa_out == 0) begin
+                    helper <= 1;
+                end 
+                // Se overflow do bit 26 (mantissa >= 2.0), normaliza com shift à direita
+                else if (mantissa_out[26]) begin
                     mantissa_out <= mantissa_out >> 1;
                     expoente_A <= expoente_A + 1;
-                end else if (mantissa_out[24] == 0 && mantissa_out[25:2] != 0) begin
+                    helper <= 0;
+                end 
+                // Se não há bit oculto em 25, normaliza com shift à esquerda
+                else if (!mantissa_out[25]) begin
                     mantissa_out <= mantissa_out << 1;
                     expoente_A <= expoente_A - 1;
-                end else begin
-                
-                data_out[31] <= sinal_A;
-                data_out[30:25] <= expoente_A;
-                data_out[24:0] <= mantissa_out[24:0]; 
-                helper <= 1; 
+                    helper <= 0;
+                end 
+                // Caso normalizado, atualiza data_out
+                else begin
+                    data_out[31] <= sinal_A;
+                    data_out[30:25] <= expoente_A;
+                    data_out[24:0] <= mantissa_out[24:0];  // ou [25:1] se quiser remover o bit oculto
+                    helper <= 1;
                 end
             end
 
