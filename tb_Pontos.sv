@@ -42,7 +42,7 @@ module tb;
         op_B_in <= 32'b1_100000_01000000000000000000000; // representa -2.5 (exemplo)
         #180;
         
-      =
+      
         op_A_in <= 32'b0_100000_01000000000000000000000; // representa +2.5 (exemplo)
         op_B_in <= 32'b1_100000_01000000000000000000000; // representa -2.5 (exemplo)
         #180;
@@ -52,8 +52,8 @@ module tb;
         op_B_in <= 32'b1_010101_11001100110011001100110; // valor negativo arbitrário
         #180;
 
-        reset = 0; // Pulso de reset para reiniciar o DUT
-        #5 reset = 1; // Reativar o DUT
+        reset <= 0; // Pulso de reset para reiniciar o DUT
+        #5 reset <= 1; // Reativar o DUT
         
         $finish;
     end
