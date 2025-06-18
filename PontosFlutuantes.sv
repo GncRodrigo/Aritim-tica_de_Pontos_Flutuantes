@@ -51,6 +51,7 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
 
             READ:begin // para facilitar, separar as mantissas, expoentes e sinais de A e B, além disso deixar sempre o maior expoente em A
                     if(start == 0 )begin
+                        helper <= 0; // reset helper
                         qual_lugar <= 0;
                         comparar <=  (op_A_in[30:25] >= op_B_in[30:25])? 1'b1 : 1'b0; 
                         start <= 1; 
