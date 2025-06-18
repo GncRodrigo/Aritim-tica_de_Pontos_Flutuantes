@@ -25,7 +25,7 @@ logic  [5:0] deslocamento;
 
 // para ficar mais fácil de manipular os bits, vamos separar os campos do ponto flutuante
 logic [25:0] mantissa_A, mantissa_B;
-logic [25:0] mantissa_out;
+logic [26:0] mantissa_out;
 logic [5:0] expoente_A, expoente_B;
 logic sinal_A, sinal_B;
 logic comparar;
