@@ -26,35 +26,68 @@ module tb;
     
     // Sequência de estímulos
     initial begin
-        $display("Iniciando simulação");
+
         // Pulso de reset curto
         #5 reset = 0;
         #5 reset = 1;
         #5;  // Pequena espera para estabilizar
         
-   
+        // Teste 1
         op_A_in <= {1'b0, 6'b011111, 25'b0}; // representa 1.0
         op_B_in <= {1'b0, 6'b100000, 25'b0}; // representa 2.0
         #180;
         
-    
-        op_A_in <= 32'b1_011111_10000000000000000000000; // representa -1.5 (exemplo)
-        op_B_in <= 32'b1_100000_01000000000000000000000; // representa -2.5 (exemplo)
+        // Teste 2
+        op_A_in <= 32'b1_011111_10000000000000000000000; // representa -1.5
+        op_B_in <= 32'b1_100000_01000000000000000000000; // representa -2.5
         #180;
         
-      
-        op_A_in <= 32'b0_100000_01000000000000000000000; // representa +2.5 (exemplo)
-        op_B_in <= 32'b1_100000_01000000000000000000000; // representa -2.5 (exemplo)
+        // Teste 3
+        op_A_in <= 32'b0_100000_01000000000000000000000; // +2.5
+        op_B_in <= 32'b1_100000_01000000000000000000000; // -2.5
         #180;
         
-      
+        // Teste 4
         op_A_in <= 32'b0_011010_00110101010101010101010; // valor positivo arbitrário
         op_B_in <= 32'b1_010101_11001100110011001100110; // valor negativo arbitrário
         #180;
 
-        reset <= 0; // Pulso de reset para reiniciar o DUT
-        #5 reset <= 1; // Reativar o DUT
+        // Teste 5 - Overflow simulado
+        op_A_in <= {1'b0, 6'd63, 25'd0};
+        op_B_in <= {1'b0, 6'd63, 25'd0};
+        #180;
+
+        // Teste 6 - Underflow simulado
+        op_A_in <= {1'b0, 6'd1, 25'd0};
+        op_B_in <= {1'b1, 6'd1, 25'd0};
+        #180;
+
+        // Teste 7 - Soma simples com mesmo expoente
+        op_A_in <= {1'b0, 6'd40, 25'd1234567};
+        op_B_in <= {1'b0, 6'd40, 25'd7654321};
+        #180;
+
+        // Teste 8 - Pequenos valores
+        op_A_in <= {1'b0, 6'd35, 25'd1};
+        op_B_in <= {1'b1, 6'd34, 25'd2};
+        #180;
+
+        // Teste 9 - Cancelamento: -x + x
+        op_A_in <= {1'b1, 6'd31, 25'd1000000};
+        op_B_in <= {1'b0, 6'd31, 25'd1000000};
+        #180;
+
+        // Teste 10 - Expoente com diferença de 1
+        op_A_in <= {1'b0, 6'd40, 25'd3333333};
+        op_B_in <= {1'b0, 6'd39, 25'd1111111};
+        #180;
+
         
+        #5 reset = 0;
+        #5 reset = 1;
+        #5;  // Pequena espera para estabilizar
+        
+        #20;
         $finish;
     end
 
