@@ -157,8 +157,9 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
     end else begin
         case(EA)
             READ: begin
-                
+                    if(start == 2)begin
                     EA <= EQUALIZING;
+                    end
             
             end
             EQUALIZING: begin
