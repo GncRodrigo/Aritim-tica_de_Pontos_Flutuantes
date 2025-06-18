@@ -103,12 +103,13 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
                 end else if (mantissa_out[24] == 0 && mantissa_out[25:2] != 0) begin
                     mantissa_out <= mantissa_out << 1;
                     expoente_A <= expoente_A - 1;
-                end 
+                end else begin
                 
                 data_out[31] <= sinal_A;
                 data_out[30:25] <= expoente_A;
                 data_out[24:0] <= mantissa_out[25:1]; 
                 helper <= 1; 
+                end
             end
 
 
