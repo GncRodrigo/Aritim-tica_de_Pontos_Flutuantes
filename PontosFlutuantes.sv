@@ -14,6 +14,7 @@ typedef enum logic [2:0] {
     OPERATION, // vai realizar a operação de adição
     EQUALIZING, // vai igualar os expoentes de A e B
     POS_OPERATION, // vai o ajuste da mantissa de data_out caso necessário
+    FINALIZE, // vai montar o data_out com os valores finais já estabilizados
     CHECK // vai verificar se a operação foi exact, overflow, underflow ou inexact
 } state_t;
 
@@ -97,22 +98,31 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
                         
             end
-            POS_OPERATION: begin   
-                qual_lugar <= 3; // indica que estamos no processo de ajuste da mantissa
-                if (mantissa_out[25] == 1) begin
+            POS_OPERATION: begin
+                qual_lugar <= 3;
+
+                if (mantissa_out == 0) begin
+                    helper <= 1;
+                end else if (mantissa_out[26]) begin
                     mantissa_out <= mantissa_out >> 1;
                     expoente_A <= expoente_A + 1;
-                end else if (mantissa_out[24] == 0 && mantissa_out[25:2] != 0) begin
+                    helper <= 0;
+                end else if (!mantissa_out[25]) begin
                     mantissa_out <= mantissa_out << 1;
                     expoente_A <= expoente_A - 1;
+                    helper <= 0;
                 end else begin
-                data_out[31] <= sinal_A;
-                data_out[30:25] <= expoente_A;
-                data_out[24:0] <= mantissa_out[24:0]; 
-                helper <= 1; 
+                    helper <= 1;
                 end
             end
 
+            // Novo estado para montar data_out com os valores finais já estabilizados
+            FINALIZE: begin
+                qual_lugar <= 5;
+                data_out[31]    <= sinal_A;
+                data_out[30:25] <= expoente_A;
+                data_out[24:0]  <= mantissa_out[24:0]; // ou [25:1] se quiser retirar o bit oculto
+            end
 
             CHECK: begin
                 qual_lugar <= 4; // indica que estamos no processo de verificação do status
@@ -151,13 +161,18 @@ always_ff @(posedge clock_100kHz, negedge reset) begin
             end
             POS_OPERATION: begin
                 if(helper == 1) begin
-                    EA <= CHECK;
+                    EA <= FINALIZE; // se a mantissa já estiver estabilizada, vai para o estado de finalização
                 end else begin
                     EA <= POS_OPERATION; // continua ajustando a mantissa
                 end
             end
-            CHECK:
+            FINALIZE: begin
+                EA <= CHECK; // vai para o estado de verificação do status
+            end
+
+            CHECK:begin
                 EA <= READ; 
+            end
 
         endcase
     end
