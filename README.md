@@ -1,6 +1,7 @@
 # Aritmética de Pontos Flutuantes
 
 **Autor:** Rodrigo Machado Gonçalves - [@GncRodrigo](https://github.com/GncRodrigo)
+
 Implementação em SystemVerilog de operações com números de ponto flutuante, utilizando um padrão IEEE 754 personalizado, com módulo principal e testbench para simulação.
 
 ---
