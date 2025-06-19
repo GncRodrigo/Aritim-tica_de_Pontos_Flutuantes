@@ -57,20 +57,7 @@ Um testbench (`tb_Pontos.sv`) acompanha o projeto para verificação funcional p
 ---
 ## 🔢Espectro numérico (IEEE 754 personalizado)
 
-| Nome Comum             | Padrão de Bits (Hex) | Valor Decimal                              |
-|------------------------|----------------------|---------------------------------------------|
-| +0                     | `00000000`           | +0.0                                        |
-| -0                     | `80000000`           | -0.0                                        |
-| 1.0                    | `00000020`           | 0.5 × 2¹ = 1.0                              |
-| 2.0                    | `00000040`           | 0.5 × 2² = 2.0                              |
-| Máximo número normal   | `7FFFFFFF`           |  ≈ 2.1474835 × 10⁹                          |
-| Mínimo positivo normal | `00000001`           |  2.98023 × 10⁻⁸                             |
-| Máx. subnormal         | `00000000`           | N/A                                         |
-| Mín. subnormal         | `00000001`           | Mesmo que acima (não há distinção)          |
-| +∞                     | `7F000000`           | Não definido (sem bits reservados)          |
-| -∞                     | `FF000000`           | Não definido  (sem bits reservados)         |
-| Not-a-Number (NaN)     | `7F800000`           | Não definido                                |
-
+![image](https://github.com/user-attachments/assets/c9051eef-3163-4204-805d-68b1b8c6ceee)
 
 ---
 ## 🌊 Resultados da Waveform:
