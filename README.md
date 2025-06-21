@@ -58,7 +58,7 @@ Um testbench (`tb_Pontos.sv`) acompanha o projeto para verificação funcional p
 ---
 ## 🔢Espectro numérico (IEEE 754 personalizado)
 
-![image](https://github.com/user-attachments/assets/c9051eef-3163-4204-805d-68b1b8c6ceee)
+![image](https://github.com/user-attachments/assets/8ddbe0db-3915-4ed5-a8fe-23af5c9683a0)
 
 ---
 ## 🌊 Resultados da Waveform:
