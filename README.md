@@ -1,6 +1,6 @@
 # Floating Point Arithmetic
 
-📚 Available in: [English](README.md) | [Portuguese](README.pt-BR.md)
+📚 Available in: [English](README.md) | [Portuguese](README.pt-br.md)
 
 **Author:** Rodrigo Machado Gonçalves - [@GncRodrigo](https://github.com/GncRodrigo)
 
